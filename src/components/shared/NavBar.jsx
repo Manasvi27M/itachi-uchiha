@@ -4,11 +4,11 @@ export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="absolute w-full bg-white/60 shadow">
+    <nav className="flex w-full bg-white/60 border-b-gray-200 shadow">
       <div className="container px-6 py-4 mx-auto">
         <div className="lg:flex lg:items-center lg:justify-between">
           <div className="flex items-center justify-between">
-            <a href="#">
+            <a href="/">
               <img
                 className="w-auto h-6 sm:h-7"
                 src="https://merakiui.com/images/full-logo.svg"
@@ -75,7 +75,7 @@ export default function NavBar() {
                 Sign In
               </a>
               <a
-                href="#"
+                href="/aboutus"
                 className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
               >
                 About Us
