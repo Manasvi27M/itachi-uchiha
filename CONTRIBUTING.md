@@ -6,25 +6,19 @@ Thank you for considering contributing to **Itachi-Uchiha**! We appreciate your 
 
 ## 🚀 Getting Started
 
-### 1️⃣ Fork the Project  
-1. Click the **Fork** button at the top right of [this repository](https://github.com/Manasvi27M/itachi-uchiha).  
-2. This will create a copy of the repository under your GitHub account.  
-3. Clone your forked repository:  
-   ```sh
-   git clone https://github.com/your-username/itachi-uchiha.git
-   ```
-4. Navigate into the project directory:  
-   ```sh
-   cd itachi-uchiha
-   ```
-5. Add the original repository as a remote to keep your fork updated:  
-   ```sh
-   git remote add upstream https://github.com/Manasvi27M/itachi-uchiha.git
-   ```
-6. Fetch the latest changes from the main repository:  
-   ```sh
-   git fetch upstream
-   ```
+### 1️⃣ Clone the Repository  
+Since this is a private repository, you do **not** need to fork it. Instead, directly clone the repository to your local machine.  
+```sh
+git clone https://github.com/Manasvi27M/itachi-uchiha.git
+```
+Navigate into the project directory:  
+```sh
+cd itachi-uchiha
+```
+Fetch the latest changes from the repository:  
+```sh
+git pull origin develop
+```
 
 ---
 
@@ -34,7 +28,7 @@ Thank you for considering contributing to **Itachi-Uchiha**! We appreciate your 
 Always work on the `develop` branch. Sync it with the latest changes before making new updates.  
 ```sh
 git checkout develop
-git pull upstream develop
+git pull origin develop
 ```
 
 ### 3️⃣ Create a New Branch  
@@ -51,8 +45,8 @@ Example branch names:
 
 ## 🏗️ Making Contributions  
 
-### 4️⃣ Work on the Issue Assigned  
-- Complete your assigned task by modifying, adding, or deleting files as necessary.  
+### 4️⃣ Work on the Issue/Feature  
+- Complete your task by modifying, adding, or deleting files as necessary.  
 - Make sure your code follows best practices and is well-documented.  
 - Test your changes before committing.  
 
@@ -80,7 +74,7 @@ Example commit messages:
 ## 🔼 Pushing Changes  
 
 ### 7️⃣ Push Your Work to GitHub  
-Upload your local branch to your forked repository:  
+Upload your local branch to the repository:  
 ```sh
 git push -u origin feature-branch-name
 ```
@@ -90,13 +84,16 @@ git push -u origin feature-branch-name
 ## 🔁 Creating a Pull Request (PR)  
 
 ### 8️⃣ Open a PR to `develop` Branch  
-1. Go to **your forked repository** on GitHub.  
+1. Go to the **repository** on GitHub.  
 2. Click the **"Compare & pull request"** button.  
 3. Ensure the PR is merging **into the `develop` branch** _(not `main`!)_.  
 4. Provide a **meaningful title** and **detailed description**.  
 5. Mention the issue number this PR solves _(e.g., "Closes #12")_.  
-6. Click **"Create Pull Request"**.  
-
+6. Click **"Create Pull Request"**.
+7. Wait for some one to review the changes and suggest changes.
+8. Work on the suggested changes by making commits to the **same branch** (No new PR is required when you do this).
+9. Wait for the PR to get reviewed and merged into the main branch.
+    
 Example PR title:  
 ✅ `feat: add animations to homepage (#45)`  
 
