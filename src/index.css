@@ -1,15 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 @import "tailwindcss";
 
 @theme {
-  --color-avocado-100: oklch(0.99 0 0);
-  --color-avocado-200: oklch(0.98 0.04 113.22);
-  --color-avocado-300: oklch(0.94 0.11 115.03);
-  --color-avocado-400: oklch(0.92 0.19 114.08);
-  --color-avocado-500: oklch(0.84 0.18 117.33);
-  --color-avocado-600: oklch(0.53 0.12 118.34);
+  --color-primary-100: #999672;
+  --color-primary-200: #9e9b6e;
+  --color-primary-600: #a4a16a;
+  --color-primary-400: #aaa765;
+  --color-primary-500: #afac61;
+  --color-primary-600: #b5b25c;
+  --color-surface-100: #fafafa;
+  --color-surface-200: #ececec;
+  --color-surface-300: #dedede;
+  --color-surface-400: #d0d0d0;
+  --color-surface-500: #c2c2c2;
+  --color-surface-600: #b4b4b4;
+  --color-tonal-100: #b2b1ae;
+  --color-tonal-200: #bfbeb9;
+  --color-tonal-300: #cccbc5;
+  --color-tonal-400: #d9d8d1;
+  --color-tonal-500: #e6e6de;
+  --color-tonal-600: #f4f3ea;
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
   /* ... */

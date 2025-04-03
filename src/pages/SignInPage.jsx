@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { MessageSquare } from "lucide-react";
-import SignIn from "../components/signIn/SignIn.jsx";
-import SignUp from "../components/signIn/SignUp.jsx";
+import SignIn from "../components/signInPage/SignIn.jsx";
+import SignUp from "../components/signInPage/SignUp.jsx";
 
 const SignInPage = () => {
   const [showSignUp, setShowSignUp] = useState(false);

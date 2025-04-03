@@ -4,7 +4,7 @@ export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="flex w-full bg-white/60 border-b-gray-200 shadow">
+    <nav className="flex w-full bg-surface-200 border-b-gray-200 shadow">
       <div className="container px-6 py-4 mx-auto">
         <div className="lg:flex lg:items-center lg:justify-between">
           <div className="flex items-center justify-between">
@@ -70,25 +70,25 @@ export default function NavBar() {
             <div className="flex flex-col -mx-6 lg:flex-row lg:items-center lg:mx-8">
               <a
                 href="/auth"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
+                className="px-3 py-2 mx-3 mt-2 text-black font-semibold transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
               >
                 Sign In
               </a>
               <a
                 href="/aboutus"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
+                className="px-3 py-2 mx-3 mt-2 text-black font-semibold transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
               >
                 About Us
               </a>
               <a
                 href="#"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
+                className="px-3 py-2 mx-3 mt-2 text-black font-semibold transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
               >
                 Random Item
               </a>
               <a
                 href="#"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
+                className="px-3 py-2 mx-3 mt-2 text-black font-semibold transition-colors duration-300 transform rounded-md lg:mt-0  hover:bg-gray-100 "
               >
                 Experts
               </a>
@@ -96,7 +96,7 @@ export default function NavBar() {
 
             <div className="flex items-center mt-4 lg:mt-0">
               <button
-                className="hidden mx-4 text-gray-600 transition-colors duration-300 transform lg:block  hover:text-gray-700 focus:text-gray-700  focus:outline-none"
+                className="hidden mx-4 text-gray-600 transition-colors duration-300 transform lg:block  hover:text-black font-semibold focus:text-black font-semibold  focus:outline-none"
                 aria-label="show notifications"
               >
                 <svg
@@ -128,7 +128,9 @@ export default function NavBar() {
                   />
                 </div>
 
-                <h3 className="mx-2 text-gray-700  lg:hidden">Khatab wedaa</h3>
+                <h3 className="mx-2 text-black font-semibold  lg:hidden">
+                  Khatab wedaa
+                </h3>
               </button>
             </div>
           </div>
