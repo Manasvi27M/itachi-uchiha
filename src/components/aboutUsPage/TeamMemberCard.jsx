@@ -16,7 +16,7 @@ export default function TeamMemberCard({ member, index, scrollY }) {
       }}
       transition={{ duration: 0.6, delay: index * 0.2 }}
     >
-      <div className="overflow-hidden h-full border-none rounded-lg bg-tonal-500 text-card-foreground shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="overflow-hidden h-full border-none rounded-lg bg-tonal-600 text-card-foreground shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div className="p-0">
           <div className="relative h-[300px] overflow-hidden group">
             <img
