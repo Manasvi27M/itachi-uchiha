@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import HeroSection from "../components/aboutUsPage/heroSection";
-import TeamSection from "../components/aboutUsPage/teamSection";
-import MissionSection from "../components/aboutUsPage/missionSection";
+import HeroSection from "../components/landingPage/HeroSection";
+import TeamSection from "../components/aboutUsPage/TeamSection";
+import MissionSection from "../components/aboutUsPage/MissionSection";
 
 export default function AboutUsPage() {
   const [activeSection, setActiveSection] = useState("intro");
