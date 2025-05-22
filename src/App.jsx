@@ -5,6 +5,7 @@ import AboutUsPage from "./pages/AboutUsPage";
 import ContactUsPage from "./pages/ContactPage";
 import LandingPage from "./pages/LandingPage";
 import "./App.css";
+import GenerateResumePage from "./pages/GenerateResumePage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/auth" element={<SignInPage />} />
         <Route path="/aboutus" element={<AboutUsPage />} />
         <Route path="/contactus" element={<ContactUsPage />} />
+        <Route path="/generateresume" element={<GenerateResumePage />} />
       </Routes>
     </Router>
   );
