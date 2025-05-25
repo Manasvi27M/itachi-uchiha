@@ -1,91 +1,125 @@
-'use client';
-import React, { useState } from 'react';
-import { UseResumeStore } from '../../store/UseResumeStore.js';
-import { CirclePlus } from 'lucide-react';
+import React, { useState } from "react";
+import { UseResumeStore } from "../../store/UseResumeStore";
+import { Plus, Trash } from "lucide-react";
 
-export default function CertificatesForm({ onClose }) {
-  const addCertificate = UseResumeStore((s) => s.setCertificates);
-  const [certificates, setCertificates] = useState([{ title: '', tag: '' }]);
+export default function CertificationsForm() {
+  const {
+    certificates,
+    setCertificates,
+    updateCertificate,
+    removeCertificate,
+  } = UseResumeStore();
 
-  const handleCertificatesChange = (e, index, field) => {
-    const value = e.target.value;
-    setCertificates((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
+  const [newCertificate, setNewCertificate] = useState({
+    title: "",
+    tag: "",
+  });
+
+  const handleAddNew = () => {
+    if (newCertificate.title.trim()) {
+      setCertificates(newCertificate);
+      setNewCertificate({ title: "", tag: "" });
+    }
   };
 
-  const addNewCertificate = () => {
-    setCertificates((prev) => [...prev, { title: '', tag: '' }]);
+  const handleChange = (index, field, value) => {
+    const updatedItem = { ...certificates[index], [field]: value };
+    updateCertificate(index, updatedItem);
   };
 
-  const removeCertificate = (index) => {
-    setCertificates((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    certificates.forEach((cert) => {
-      if (cert.title.trim()) addCertificate(cert);
-    });
-    onClose();
+  const handleNewChange = (field, value) => {
+    setNewCertificate({ ...newCertificate, [field]: value });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h1 className="text-2xl font-semibold border-b pb-2">Certificates</h1>
-
-      {certificates.map((certificate, index) => (
-        <div key={index} className="border p-4 rounded-md space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="font-bold">#{index + 1}</span>
-            <button
-              type="button"
-              onClick={() => removeCertificate(index)}
-              className={`text-red-500 hover:underline ${index === 0 ? 'hidden' : ''}`}
+    <div className="space-y-6">
+      {/* Existing certificates */}
+      {certificates.length > 0 && (
+        <div className="space-y-2">
+          {certificates.map((cert, index) => (
+            <div
+              key={index}
+              className="p-3 border border-gray-200 rounded-md bg-white shadow-sm flex items-center justify-between"
             >
-              Remove
-            </button>
-          </div>
-          <div className="flex flex-col">
-            <label>Certificate Title</label>
+              <div className="flex-1 mr-4">
+                <div className="text-sm font-medium">{cert.title}</div>
+                {cert.tag && (
+                  <div className="text-xs text-gray-500">{cert.tag}</div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newTitle = window.prompt(
+                      "Certificate title:",
+                      cert.title
+                    );
+                    if (newTitle !== null) {
+                      handleChange(index, "title", newTitle);
+                    }
+                  }}
+                  className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                >
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => removeCertificate(index)}
+                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  title="Remove certificate"
+                >
+                  <Trash size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Add new certificate */}
+      <div className="p-4 border border-dashed border-gray-300 rounded-md bg-white">
+        <h3 className="text-sm font-medium text-gray-700 mb-3">
+          Add New Certificate
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="form-group">
+            <label className="form-label">Certificate Title</label>
             <input
-              value={certificate.title}
-              onChange={(e) => handleCertificatesChange(e, index, 'title')}
-              className="w-full border p-2 rounded"
+              type="text"
+              value={newCertificate.title}
+              onChange={(e) => handleNewChange("title", e.target.value)}
+              placeholder="AWS Certified Solutions Architect"
+              className="form-input"
             />
           </div>
-          <div className="flex flex-col">
-            <label>Tag</label>
+
+          <div className="form-group">
+            <label className="form-label">Tag/Issuer</label>
             <input
-              value={certificate.tag}
-              onChange={(e) => handleCertificatesChange(e, index, 'tag')}
-              className="w-full border p-2 rounded"
+              type="text"
+              value={newCertificate.tag}
+              onChange={(e) => handleNewChange("tag", e.target.value)}
+              placeholder="Amazon Web Services"
+              className="form-input"
             />
           </div>
         </div>
-      ))}
 
-      <div className="flex">
-        <button
-          type="button"
-          onClick={addNewCertificate}
-          className="flex items-center border p-2 rounded hover:bg-gray-100"
-        >
-          <CirclePlus className="h-5 w-5" />
-          <span className="ml-1">Add Certificate</span>
-        </button>
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleAddNew}
+            disabled={!newCertificate.title.trim()}
+            className="btn btn-primary flex items-center gap-1"
+          >
+            <Plus size={16} /> Add Certificate
+          </button>
+        </div>
       </div>
-
-      <div className="flex justify-end pt-4">
-        <button type="button" onClick={onClose} className="mr-2 px-4 py-2 rounded border">
-          Cancel
-        </button>
-        <button type="submit" className="px-4 py-2 bg-teal-600 text-white rounded">
-          Save All
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }

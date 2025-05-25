@@ -1,73 +1,90 @@
-'use client';
-import React, { useState } from 'react';
-import { UseResumeStore } from '../../store/UseResumeStore.js';
-import { Trash } from 'lucide-react';
+import React, { useState } from "react";
+import { UseResumeStore } from "../../store/UseResumeStore";
+import { Plus, Trash, X } from "lucide-react";
 
-export default function SkillsFormFull({ onClose }) {
-  const skills = UseResumeStore((s) => s.skills);
-  const setSkills = UseResumeStore((s) => s.setSkills);
-
-  const [newSkill, setNewSkill] = useState('');
+export default function SkillsForm() {
+  const { skills, setSkills } = UseResumeStore();
+  const [newSkill, setNewSkill] = useState("");
 
   const handleAddSkill = () => {
-    if (newSkill.trim() !== '') {
+    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       setSkills([...skills, newSkill.trim()]);
-      setNewSkill('');
+      setNewSkill("");
     }
   };
 
-  const handleRemoveSkill = (index) => {
-    setSkills(skills.filter((_, i) => i !== index));
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddSkill();
+    }
+  };
+
+  const removeSkill = (index) => {
+    const updatedSkills = skills.filter((_, i) => i !== index);
+    setSkills(updatedSkills);
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="font-semibold text-2xl border-b-2 pb-2">Skills</h1>
-
-      <div className="flex flex-col gap-2 px-4">
-        <div className="flex items-center">
+    <div className="space-y-4">
+      <div className="form-group">
+        <label className="form-label">Add Skills</label>
+        <div className="flex gap-2">
           <input
             type="text"
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
-            className="border p-2 rounded flex-1"
-            placeholder="Enter new skill"
+            onKeyDown={handleKeyDown}
+            placeholder="e.g., JavaScript, React, Node.js"
+            className="form-input flex-1"
           />
           <button
-            onClick={handleAddSkill}
-            className="ml-4 bg-teal-600 text-white px-4 py-2 rounded"
-          >
-            Add
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-3 mt-4 max-h-60 overflow-y-auto">
-          {skills.map((skill, index) => (
-            <div
-              key={index}
-              className="flex items-center bg-gray-100 text-black px-3 py-1 rounded-full"
-            >
-              <span>{skill}</span>
-              <button
-                onClick={() => handleRemoveSkill(index)}
-                className="ml-2 text-red-500 hover:text-red-700"
-              >
-                <Trash className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex justify-end mt-4">
-          <button
             type="button"
-            onClick={onClose}
-            className="px-4 py-2 border rounded"
+            onClick={handleAddSkill}
+            disabled={!newSkill.trim()}
+            className="btn btn-primary whitespace-nowrap"
           >
-            Close
+            <Plus size={16} />
+            <span className="hidden sm:inline ml-1">Add</span>
           </button>
         </div>
+        <p className="text-xs text-gray-500 mt-1">
+          Press Enter to add multiple skills quickly
+        </p>
       </div>
+
+      {skills.length > 0 && (
+        <div className="mt-4">
+          <label className="form-label mb-2">Your Skills</label>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, index) => (
+              <div
+                key={index}
+                className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full flex items-center gap-1 group transition-colors hover:bg-gray-200"
+              >
+                <span>{skill}</span>
+                <button
+                  type="button"
+                  onClick={() => removeSkill(index)}
+                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  title="Remove skill"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {skills.length === 0 && (
+        <div className="text-center p-4 border border-dashed border-gray-300 rounded-md bg-gray-50">
+          <p className="text-gray-500">No skills added yet</p>
+          <p className="text-sm text-gray-400">
+            Add skills to showcase your technical expertise
+          </p>
+        </div>
+      )}
     </div>
   );
 }
