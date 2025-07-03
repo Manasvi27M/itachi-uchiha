@@ -283,8 +283,12 @@ export const UseResumeStore = create(
 
       // Certificates
       certificates: [],
-      // ← REWRITTEN: now takes an array and *replaces* the entire certificates list
       setCertificates: (certificates) => set({ certificates }),
+      // Added missing addCertificate function
+      addCertificate: (certificate) =>
+        set((state) => ({
+          certificates: [...state.certificates, certificate],
+        })),
       updateCertificate: (index, updatedCertificate) =>
         set((state) => {
           const updated = [...state.certificates];

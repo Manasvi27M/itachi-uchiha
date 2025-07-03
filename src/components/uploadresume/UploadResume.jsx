@@ -1,7 +1,5 @@
-// components/UploadResume.jsx
 import React, { useState } from "react";
 import { UseResumeStore } from "../../store/UseResumeStore";
-import extractContactDetails from "../../lib/extractdetails/extract-contact";
 
 export default function UploadResume() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,128 +23,145 @@ export default function UploadResume() {
     setError("");
     setIsLoading(true);
     try {
-      const sysPrompt = `You are ResumeParserGPT, a specialized assistant for extracting structured data from resumes. When you receive an input sume data, your job is to output **only** a JSON object following exactly this schema:
+      const sysPrompt = `You are ResumeParserGPT, a specialized assistant for extracting structured data from resumes. When you receive an input resume data, your job is to output **only** a JSON object following exactly this schema:
 {
-  "contact": {
+  "basicDetails": {
     "name": "",
     "phone": "",
     "city": "",
     "state": "",
-    "email": "",
-    "linkedIn": "",
+    "gmail": "",
     "github": "",
-    "portfolio": ""
+    "linkedIn": ""
   },
-  "summary": "",
   "education": [
     {
-      "institution": "",
-      "degree": "",
-      "period": ""
+      "name": "",
+      "course": "",
+      "score": "",
+      "duration": ""
     }
   ],
-  "experience": [
+  "technicalExperience": [
     {
+      "companyName": "",
       "role": "",
-      "company": "",
-      "period": "",
-      "bullets": [""]
+      "duration": "",
+      "description": ""
     }
   ],
   "skills": [""],
   "projects": [
     {
       "name": "",
-      "period": "",
+      "techstack": "",
+      "gitlink": "",
+      "year": "",
       "description": ""
     }
   ],
-  "certifications": [""],
+  "certificates": [
+    {
+      "title": "",
+      "tag": ""
+    }
+  ],
   "achievements": [""]
 }
-
 
 **Rules:**
 1. **Output only valid JSON** — no markdown, no explanations.
 2. If any field is missing in the resume, set it to an empty string ("") or an empty array ([]) for lists.
-3. Dates should use ISO format (YYYY-MM or YYYY-MM-DD). If only a year is given, use YYYY.
-4. Split the candidate name into firstName and lastName. If only one name is present, put it into firstName and leave lastName empty.
-5. For multi-item sections (education, experience, skills, certifications, projects), include one array element per entry.
-6. Preserve the order of entries as they appear in the resume. 
+3. For basicDetails.gmail, extract the email address from the resume.
+4. For skills, provide an array of individual skill strings.
+5. For certificates, provide an array of objects with title and tag (issuer) fields.
+6. For technicalExperience.description, combine all bullet points into a single string separated by newlines.
+7. For education.name, use the institution name; for education.course, use the degree/program name.
+8. Dates should be in a readable format (e.g., "2024-08 – 2024-11" or "Jun 2024 - Present").
+9. Preserve the order of entries as they appear in the resume.
 Data: `;
 
-      const resumeText = `MANASVI M
- +91-9019862884 | Bengaluru, Karnataka | manasvii.social@gmail.com | LinkedIn | GitHub | Portfolio
- SUMMARY
- Aspiring Full Stack Developer with a strong foundation in both front-end and back-end technologies,
- and a passion for problem-solving, eager to build impactful web applications and solutions while continuously
- learning and growing in dynamic environments.
- SKILLS
- Programming Languages
- Front End Development
- Back End Development
- Version Control and Tools
- Java, C++, C, Python, JavaScript
- React, Tailwind CSS, HTML5, CSS3, Bootstrap
- MySQL, MongoDB, Node.js, Express Microsoft Azure
- Git, Github, Postman, RESTful APIs, Streamlit
- PROJECTS
- SmartResume | AI-Driven Resume & Job Matching Platform 
-March 2025– Present
- • Architecting a full-stack web app using Next.js, Tailwind CSS, and Node.js, allowing users to create
- ATS-optimized resumes with AI-powered suggestions and multiple design templates.
- • Integrated job recommendation and resume tailoring engine using REST APIs, MongoDB, and dynamic
- resume scoring logic, improving job application efficiency by personalizing resumes for each listing.
- Crop Connect | Agriculture Equipment and Produce Marketplace 
-Oct 2024– Dec 2024
- • Built a responsive marketplace platform using HTML, CSS, JavaScript, and MySQL, enabling farmers
- to rent equipment and sell produce.
- • Enhanced user experience with streamlined workflows and mobile-first UI, increasing average session duration
- by 40%.
- WanderWise | Smart Travel Booking System 
-Jun 2024– Jul 2024
- • Created a travel management system using Flask and MySQL with secure user login, booking, and
- cancellation modules, supporting real-time seat and room tracking.
- • Improved data access efficiency by 60% using optimized SQL joins, foreign keys, and database normal
-ization to support scalable, relational data handling.
- Graph Coloring Visualizer | Greedy Algorithm 
-Jun 2024– Jul 2024
- • Designed an interactive Streamlit app to visualize the Greedy Graph Coloring algorithm with user-defined
- or auto-generated graphs, enhancing algorithmic learning.
- • Supported visualization for 50+ graph configurations, enabling students and educators to explore opti
-mization techniques in graph theory interactively.
- EDUCATION
- RNS Institute of Technology
- Bachelor of Information Science and Engineering
- Deeksha Center for Learning
- Pre-University
- CERTIFICATIONS
- 2022- Present
- CGPA: 9.22
- 2020- 2022
- Score: 96%
- Microsoft Certified — Azure Fundamentals (AZ-900)
- EXTRA CURRICULAR ACTIVITIES AND ACHIEVEMENTS
- GirlScript Summer of Code | Contributed to 3+ organizations collaborating with global developers
- LogicLeap | Organized a series of department-level competitive coding contest for 4th and 6th semester students`;
-      console.log(resumeText);
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result;
+          resolve(dataUrl.split(",", 2)[1]);
+        };
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
 
-      // Adjust URL if backend lives elsewhere
+      // Build the JSON payload
+      const payload = {
+        Parameters: [
+          {
+            Name: "File",
+            FileValue: {
+              Name: file.name,
+              Data: base64,
+            },
+          },
+          {
+            Name: "StoreFile",
+            Value: true,
+          },
+        ],
+      };
+      const CONVERTAI_API = process.env.CONVERTAI_API;
+
+      // Call ConvertAPI
+      const convRes = await fetch(
+        "https://v2.convertapi.com/convert/pdf/to/txt",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${CONVERTAI_API}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!convRes.ok) {
+        const errBody = await convRes.text().catch(() => null);
+        throw new Error(`ConvertAPI error ${convRes.status}: ${errBody}`);
+      }
+
+      const convJson = await convRes.json();
+      console.log("ConvertAPI response:", convJson);
+
+      const txtUrl = convJson.Files?.[0]?.Url;
+      console.log("Text URL:", txtUrl);
+
+      if (!txtUrl) throw new Error("No File URL returned from ConvertAPI");
+
+      // Download the TXT and read as string
+      const txtRes = await fetch(txtUrl);
+      if (!txtRes.ok) {
+        let msg = txtRes.statusText;
+        try {
+          const errJson = await txtRes.json();
+          msg = errJson.Message || errJson.message || JSON.stringify(errJson);
+        } catch {}
+        throw new Error(`Download failed (${txtRes.status}): ${msg}`);
+      }
+
+      const resumeText = await txtRes.text();
+      console.log("Extracted resume text:", resumeText);
+      const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
+      // Call LLM API
       const response = await fetch(
         "https://openrouter.ai/api/v1/chat/completions",
         {
           method: "POST",
           headers: {
-            Authorization:
-              "Bearer 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",
+            Authorization: `Bearer ${OPENROUTER_API_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemma-3n-e4b-it:free",
-            messages: [
-              // { role: "system", content: sysPrompt },
-              { role: "user", content: sysPrompt + resumeText },
-            ],
+            model: "deepseek/deepseek-chat-v3-0324:free",
+            messages: [{ role: "user", content: sysPrompt + resumeText }],
           }),
         }
       );
@@ -156,122 +171,163 @@ mization techniques in graph theory interactively.
         const message =
           (errorJson && errorJson.error) ||
           `Server responded with ${response.status}`;
-        console.log(response);
+        console.log("LLM API error:", response);
         throw new Error(message);
       }
 
       const data = await response.json();
-      console.log(data);
+      console.log("LLM API response:", data);
 
-      // data.choices is an array; we want the first message from the assistant:
+      // Extract and clean the assistant's response
       let assistantMessage = data.choices[0].message.content.trim();
       assistantMessage = assistantMessage
         .replace(/^```(?:json)?\s*/, "")
         .replace(/\s*```$/, "");
-      console.log(assistantMessage);
 
-      // Now parse that string as JSON:
+      console.log("Cleaned assistant message:", assistantMessage);
+
+      // Parse JSON
       let parsed;
       try {
         parsed = JSON.parse(assistantMessage);
       } catch (e) {
         console.error("Failed to parse JSON from assistant:", assistantMessage);
-        throw e;
+        throw new Error("Invalid JSON response from AI: " + e.message);
       }
 
-      // parsed now contains your structured resume object:
-      console.log(parsed);
-      // parsed keys: { contact, summary, skills, education, experience, projects, certifications, achievements }
+      console.log("Parsed resume data:", parsed);
 
-      // ─── 1) BASIC DETAILS from contact block ─────────────────────────────────────────
-      // 1) Extract the raw contact string from parsed.contact
+      // MAP DATA TO STORE - Fixed to match the expected structure
 
-      const contact = parsed.contact || {};
+      // 1) Basic details - Direct mapping
+      const basicDetails = parsed.basicDetails || {};
+      const mappedBasicDetails = {
+        name: basicDetails.name || "",
+        phone: basicDetails.phone || "",
+        city: basicDetails.city || "",
+        state: basicDetails.state || "",
+        gmail: basicDetails.gmail || "",
+        github: basicDetails.github || "",
+        linkedIn: basicDetails.linkedIn || "",
+      };
 
-      setBasicDetails({
-        name: contact.name || "",
-        phone: contact.phone || "",
-        city: contact.city || "",
-        state: contact.state || "",
-        email: contact.email || "",
-        linkedIn: contact.linkedIn || "",
-        github: contact.github || "",
-        portfolio: contact.portfolio || "",
-      });
+      console.log("Setting basic details:", mappedBasicDetails);
+      setBasicDetails(mappedBasicDetails);
 
-      // ─── 2) EDUCATION (already an array of {institution, degree, period}) ──────────────
-      const eduRaw = Array.isArray(parsed.education) ? parsed.education : [];
-      const eduArray = eduRaw.map((entry) => ({
-        institution: entry.institution || "",
-        degree: entry.degree || "",
-        period: entry.period || "",
-      }));
-      setEducation(eduArray);
+      // 2) Education - Map to expected structure
+      const education =
+        Array.isArray(parsed.education) && parsed.education.length > 0
+          ? parsed.education.map((e, index) => {
+              console.log(`Processing education item ${index}:`, e);
+              return {
+                name: String(e.name || e.institution || ""), // Handle both name and institution
+                course: String(e.course || e.degree || ""), // Handle both course and degree
+                score: String(e.score || ""),
+                duration: String(e.duration || e.period || ""), // Handle both duration and period
+              };
+            })
+          : [];
 
-      // ─── 3) EXPERIENCE (already an array of {role, company, period, bullets}) ───────────
-      const expRaw = Array.isArray(parsed.experience) ? parsed.experience : [];
-      const expArray = expRaw.map((entry) => ({
-        role: entry.role || "",
-        company: entry.company || "",
-        period: entry.period || "",
-        bullets: Array.isArray(entry.bullets) ? entry.bullets : [],
-      }));
-      setTechnicalExperience(expArray);
+      console.log("Final education array:", education);
+      setEducation(education);
 
-      // ─── 4) SKILLS (array of strings) ─────────────────────────────────────────────────────
-      let skillsRaw = parsed.skills || [];
-      if (!Array.isArray(skillsRaw)) {
-        if (typeof skillsRaw === "string") {
-          skillsRaw = skillsRaw
-            .split(/[,;\n•·•\u2022]+/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-        } else {
-          skillsRaw = [];
-        }
+      // 3) Technical Experience - Map to expected structure
+      const technicalExperience =
+        Array.isArray(parsed.technicalExperience) &&
+        parsed.technicalExperience.length > 0
+          ? parsed.technicalExperience.map((e, index) => {
+              console.log(`Processing technical experience item ${index}:`, e);
+              // Convert bullets array to description string if needed
+              let description = e.description || "";
+              if (Array.isArray(e.bullets) && e.bullets.length > 0) {
+                description = e.bullets.join("\n");
+              }
+
+              return {
+                companyName: String(e.companyName || e.company || ""),
+                role: String(e.role || ""),
+                duration: String(e.duration || e.period || ""),
+                description: String(description),
+              };
+            })
+          : [];
+
+      console.log("Final technical experience array:", technicalExperience);
+      setTechnicalExperience(technicalExperience);
+
+      // 4) Skills - Direct mapping
+      const skills =
+        Array.isArray(parsed.skills) && parsed.skills.length > 0
+          ? parsed.skills
+              .filter((skill) => skill && skill.trim())
+              .map((s) => String(s))
+          : [];
+
+      console.log("Setting skills:", skills);
+      setSkills(skills);
+
+      // 5) Projects - Map to expected structure
+      const projects =
+        Array.isArray(parsed.projects) && parsed.projects.length > 0
+          ? parsed.projects.map((p, index) => {
+              console.log(`Processing project item ${index}:`, p);
+              return {
+                name: String(p.name || ""),
+                techstack: String(p.techstack || ""),
+                gitlink: String(p.gitlink || ""),
+                year: String(p.year || p.period || ""),
+                description: String(p.description || ""),
+              };
+            })
+          : [];
+
+      console.log("Setting projects:", projects);
+      setProjects(projects);
+
+      // 6) Certificates - Map to expected structure
+      let certificates = [];
+      if (
+        Array.isArray(parsed.certificates) &&
+        parsed.certificates.length > 0
+      ) {
+        certificates = parsed.certificates
+          .map((cert, index) => {
+            console.log(`Processing certificate item ${index}:`, cert);
+            // Handle both string and object formats
+            if (typeof cert === "string") {
+              return {
+                title: cert,
+                tag: "",
+              };
+            } else if (typeof cert === "object") {
+              return {
+                title: String(cert.title || cert.name || ""),
+                tag: String(cert.tag || cert.issuer || ""),
+              };
+            }
+            return { title: "", tag: "" };
+          })
+          .filter((cert) => cert.title.trim());
       }
-      setSkills(skillsRaw);
 
-      // ─── 5) PROJECTS (array of {name, period, description}) ──────────────────────────────
-      const projRaw = Array.isArray(parsed.projects) ? parsed.projects : [];
-      const projArray = projRaw.map((entry) => ({
-        name: entry.name || "",
-        period: entry.period || "",
-        description: entry.description || "",
-      }));
-      setProjects(projArray);
+      console.log("Setting certificates:", certificates);
+      setCertificates(certificates);
 
-      // ─── 6) CERTIFICATIONS (array of strings) ────────────────────────────────────────────
-      let certRaw = parsed.certifications || [];
-      if (!Array.isArray(certRaw)) {
-        if (typeof certRaw === "string") {
-          certRaw = certRaw
-            .split(/[\n;•·•\u2022]+/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-        } else {
-          certRaw = [];
-        }
-      }
-      setCertificates(certRaw);
+      // 7) Achievements - Direct mapping
+      const achievements =
+        Array.isArray(parsed.achievements) && parsed.achievements.length > 0
+          ? parsed.achievements
+              .filter((achievement) => achievement && achievement.trim())
+              .map((a) => String(a))
+          : [];
 
-      // ─── 7) ACHIEVEMENTS (array of strings) ──────────────────────────────────────────────
-      let achieveRaw = parsed.achievements || [];
-      if (!Array.isArray(achieveRaw)) {
-        if (typeof achieveRaw === "string") {
-          achieveRaw = achieveRaw
-            .split(/[\n;•·•\u2022]+/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-        } else {
-          achieveRaw = [];
-        }
-      }
-      setAchievements(achieveRaw);
+      console.log("Setting achievements:", achievements);
+      setAchievements(achievements);
 
       setIsLoading(false);
+      console.log("Resume parsing completed successfully!");
     } catch (err) {
-      console.error(err);
+      console.error("Error parsing resume:", err);
       setError(err.message || "Failed to parse resume");
       setIsLoading(false);
     }
@@ -279,40 +335,73 @@ mization techniques in graph theory interactively.
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-center">
+      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
         Upload Your Resume
       </h2>
 
-      <label
-        htmlFor="resumeFile"
-        className="block text-sm font-medium text-gray-700 mb-2"
-      >
-        Select a PDF or DOCX file:
-      </label>
-      <input
-        id="resumeFile"
-        type="file"
-        accept=".pdf,.docx"
-        onChange={handleFileChange}
-        className="block w-full text-sm text-gray-500
-                   file:mr-4 file:py-2 file:px-4
-                   file:rounded file:border-0
-                   file:text-sm file:font-semibold
-                   file:bg-indigo-50 file:text-indigo-700
-                   hover:file:bg-indigo-100"
-      />
+      <div className="mb-4">
+        <label
+          htmlFor="resumeFile"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Select a PDF or DOCX file:
+        </label>
+        <input
+          id="resumeFile"
+          type="file"
+          accept=".pdf,.docx"
+          onChange={handleFileChange}
+          className="block w-full text-sm text-gray-500
+                     file:mr-4 file:py-2 file:px-4
+                     file:rounded-md file:border-0
+                     file:text-sm file:font-semibold
+                     file:bg-teal-50 file:text-teal-700
+                     hover:file:bg-teal-100 transition-colors
+                     border border-gray-300 rounded-md
+                     focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+        />
+      </div>
 
       {isLoading && (
-        <p className="mt-4 text-blue-600 animate-pulse">
-          Parsing resume, please wait…
-        </p>
+        <div className="mt-4 p-4 bg-blue-50 rounded-md">
+          <p className="text-blue-600 animate-pulse flex items-center">
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Parsing resume, please wait…
+          </p>
+        </div>
       )}
-      {error && <p className="mt-4 text-red-600 font-medium">Error: {error}</p>}
+
+      {error && (
+        <div className="mt-4 p-4 bg-red-50 rounded-md">
+          <p className="text-red-600 font-medium">Error: {error}</p>
+        </div>
+      )}
 
       {!isLoading && !error && (
-        <p className="mt-4 text-green-600">
-          Once uploaded, your resume fields will be auto‐filled below.
-        </p>
+        <div className="mt-4 p-4 bg-green-50 rounded-md">
+          <p className="text-green-600">
+            Once uploaded, your resume fields will be auto-filled in the editor.
+          </p>
+        </div>
       )}
     </div>
   );
