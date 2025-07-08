@@ -1,12 +1,11 @@
-"use client";
-
 import { motion, AnimatePresence } from "framer-motion";
-import { RefreshCw, Menu, ChevronRight } from "lucide-react";
+import { RefreshCw, Menu, ChevronRight, Plus, Search } from "lucide-react";
 import { OverviewSection } from "./OverviewSection";
 import { ResumeHistorySection } from "./ResumeHistorySection";
 import { AnalyticsSection } from "./AnalyticsSection";
 import { ATSScoresSection } from "./ATSScoresSection";
 import { AIInsightsSection } from "./AIInsightsSection";
+import { useState } from "react";
 
 export function DashboardContent({
   selectedView,
@@ -18,6 +17,7 @@ export function DashboardContent({
   sidebarCollapsed,
   onCollapseSidebar,
 }) {
+  const [searchQuery, setSearchQuery] = useState("");
   const renderContent = () => {
     switch (selectedView) {
       case "overview":
@@ -78,8 +78,8 @@ export function DashboardContent({
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 bg-white border-b border-slate-200 px-4">
-        <div className="flex items-center gap-2 flex-1">
+      <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 bg-white border-b border-slate-200 px-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={onToggleSidebar}
             className="p-2 hover:bg-slate-100 rounded-lg transition-colors lg:hidden"
@@ -115,7 +115,20 @@ export function DashboardContent({
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4 ml-auto">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-64 pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
+
+          {/* Refresh Button */}
           <button
             onClick={onRefresh}
             className="p-2 hover:bg-slate-100 rounded-lg transition-colors"

@@ -1,5 +1,3 @@
-"use client";
-
 import { motion } from "framer-motion";
 import {
   Target,
@@ -20,6 +18,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useMemo } from "react";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -43,76 +42,95 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function ATSScoresSection({ resumeData }) {
-  const atsData = resumeData.map((resume) => ({
-    name: resume.title.split(" ")[0],
-    score: resume.atsScore,
-    industry: resume.industry,
-    status: resume.status,
-  }));
+  // Memoize all data calculations to prevent re-renders
+  const {
+    atsData,
+    scoreDistribution,
+    avgScore,
+    highScoreCount,
+    improvementNeeded,
+    recommendations,
+  } = useMemo(() => {
+    const atsData = resumeData.map((resume) => ({
+      name: resume.title.split(" ")[0],
+      score: resume.atsScore,
+      industry: resume.industry,
+      status: resume.status,
+    }));
 
-  const scoreDistribution = [
-    {
-      range: "90-100",
-      count: resumeData.filter((r) => r.atsScore >= 90).length,
-      color: "#10B981",
-    },
-    {
-      range: "80-89",
-      count: resumeData.filter((r) => r.atsScore >= 80 && r.atsScore < 90)
-        .length,
-      color: "#3B82F6",
-    },
-    {
-      range: "70-79",
-      count: resumeData.filter((r) => r.atsScore >= 70 && r.atsScore < 80)
-        .length,
-      color: "#F59E0B",
-    },
-    {
-      range: "60-69",
-      count: resumeData.filter((r) => r.atsScore >= 60 && r.atsScore < 70)
-        .length,
-      color: "#EF4444",
-    },
-    {
-      range: "<60",
-      count: resumeData.filter((r) => r.atsScore < 60).length,
-      color: "#DC2626",
-    },
-  ];
+    const scoreDistribution = [
+      {
+        range: "90-100",
+        count: resumeData.filter((r) => r.atsScore >= 90).length,
+        color: "#10B981",
+      },
+      {
+        range: "80-89",
+        count: resumeData.filter((r) => r.atsScore >= 80 && r.atsScore < 90)
+          .length,
+        color: "#3B82F6",
+      },
+      {
+        range: "70-79",
+        count: resumeData.filter((r) => r.atsScore >= 70 && r.atsScore < 80)
+          .length,
+        color: "#F59E0B",
+      },
+      {
+        range: "60-69",
+        count: resumeData.filter((r) => r.atsScore >= 60 && r.atsScore < 70)
+          .length,
+        color: "#EF4444",
+      },
+      {
+        range: "<60",
+        count: resumeData.filter((r) => r.atsScore < 60).length,
+        color: "#DC2626",
+      },
+    ];
 
-  const avgScore = Math.round(
-    resumeData.reduce((sum, resume) => sum + resume.atsScore, 0) /
-      resumeData.length
-  );
-  const highScoreCount = resumeData.filter((r) => r.atsScore >= 80).length;
-  const improvementNeeded = resumeData.filter((r) => r.atsScore < 70).length;
+    const avgScore = Math.round(
+      resumeData.reduce((sum, resume) => sum + resume.atsScore, 0) /
+        resumeData.length
+    );
+    const highScoreCount = resumeData.filter((r) => r.atsScore >= 80).length;
+    const improvementNeeded = resumeData.filter((r) => r.atsScore < 70).length;
 
-  const recommendations = [
-    {
-      type: "success",
-      icon: CheckCircle,
-      title: "Strong Keywords Usage",
-      description:
-        "Your resumes show good keyword optimization for ATS systems",
-      count: highScoreCount,
-    },
-    {
-      type: "warning",
-      icon: AlertCircle,
-      title: "Format Optimization",
-      description:
-        "Some resumes could benefit from better formatting for ATS parsing",
-      count: 2,
-    },
-    {
-      type: "error",
-      icon: XCircle,
-      title: "Needs Improvement",
-      description: "These resumes require significant optimization",
-      count: improvementNeeded,
-    },
-  ];
+    const recommendations = [
+      {
+        type: "success",
+        icon: CheckCircle,
+        title: "Strong Keywords Usage",
+        description:
+          "Your resumes show good keyword optimization for ATS systems",
+        count: highScoreCount,
+      },
+      {
+        type: "warning",
+        icon: AlertCircle,
+        title: "Format Optimization",
+        description:
+          "Some resumes could benefit from better formatting for ATS parsing",
+        count: 2,
+      },
+      {
+        type: "error",
+        icon: XCircle,
+        title: "Needs Improvement",
+        description: "These resumes require significant optimization",
+        count: improvementNeeded,
+      },
+    ];
+
+    return {
+      atsData,
+      scoreDistribution,
+      avgScore,
+      highScoreCount,
+      improvementNeeded,
+      recommendations,
+    };
+  }, [resumeData]);
 
   const getScoreColor = (score) => {
     if (score >= 90) return "#10B981";
@@ -255,14 +273,8 @@ export function ATSScoresSection({ resumeData }) {
                 <Tooltip content={<CustomTooltip />} />
                 <Bar
                   dataKey="score"
-                  fill="#3B82F6"
                   radius={[0, 4, 4, 0]}
-                  shape={(props) => {
-                    const { payload } = props;
-                    return (
-                      <Bar {...props} fill={getScoreColor(payload.score)} />
-                    );
-                  }}
+                  fill={(entry) => getScoreColor(entry?.score || 0)}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -283,15 +295,13 @@ export function ATSScoresSection({ resumeData }) {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={scoreDistribution}
+                  data={scoreDistribution.filter((item) => item.count > 0)}
                   cx="50%"
                   cy="50%"
                   outerRadius="80%"
                   fill="#8884d8"
                   dataKey="count"
-                  label={({ range, count }) =>
-                    count > 0 ? `${range}: ${count}` : ""
-                  }
+                  label={({ range, count }) => `${range}: ${count}`}
                   labelStyle={{ fontSize: "12px" }}
                 >
                   {scoreDistribution.map((entry, index) => (

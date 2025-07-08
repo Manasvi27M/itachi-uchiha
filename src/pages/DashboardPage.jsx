@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-slate-50 flex">
+      <div className="min-h-screen bg-slate-50 flex overflow-hidden">
         <DashboardSidebar
           selectedView={selectedView}
           onViewChange={setSelectedView}

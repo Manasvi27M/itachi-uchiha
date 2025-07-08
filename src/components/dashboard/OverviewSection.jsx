@@ -8,6 +8,7 @@ import {
   Star,
   ArrowUpRight,
   ArrowDownRight,
+  Plus,
 } from "lucide-react";
 import {
   BarChart,
@@ -132,9 +133,20 @@ export function OverviewSection({ resumeData }) {
         transition={{ duration: 0.5 }}
         className="space-y-2"
       >
-        <h1 className="text-3xl font-bold text-slate-900">
-          Dashboard Overview
-        </h1>
+        <div className="flex w-full justify-between">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Dashboard Overview
+          </h1>
+          <span>
+            {/* Create Resume Button */}
+            <button className="ml-4 bg-slate-900 hover:bg-slate-800 hover:cursor-pointer text-white px-4 py-2 rounded-lg text-md font-medium transition-colors flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">
+                <a href="/generateresume">Create Resume</a>
+              </span>
+            </button>
+          </span>
+        </div>
         <p className="text-slate-600">
           Track your resume performance and career progress
         </p>

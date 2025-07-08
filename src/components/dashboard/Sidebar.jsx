@@ -75,7 +75,7 @@ export function DashboardSidebar({
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-screen bg-white border-r border-slate-200 z-50 transition-all duration-300 ${
+        className={`fixed left-0 top-0 min-h-screen flex-col justify-between bg-white border-r border-slate-200 z-50 transition-all duration-300 ${
           isCollapsed ? "w-16" : "w-64"
         } ${
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -133,7 +133,7 @@ export function DashboardSidebar({
         </div>
 
         {/* Content */}
-        <div className="p-3 flex-1 overflow-y-auto">
+        <div className="p-3 overflow-y-auto">
           {/* Quick Create Button */}
           {!isCollapsed && (
             <motion.div
@@ -240,9 +240,8 @@ export function DashboardSidebar({
             </div>
           )}
         </div>
-
         {/* Footer */}
-        <div className="border-t border-slate-100 p-3">
+        <div className="border-t border-slate-100 p-3 flex-shrink-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
