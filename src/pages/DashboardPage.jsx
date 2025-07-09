@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DashboardSidebar } from "../components/dashboard/sidebar";
+import { DashboardSidebar } from "../components/dashboard/Sidebar";
 import { DashboardContent } from "../components/dashboard/DashboardContent";
 import { LoadingSpinner } from "../components/dashboard/LoadingSpinner";
 import { ErrorBoundary } from "../components/dashboard/ErrorBoundary";
