@@ -34,7 +34,10 @@ export function AnalyticsSection({ resumeData }) {
 
   const conversionData = resumeData.map((resume) => ({
     name: resume.title.split(" ")[0],
-    viewToApplication: ((resume.applications / resume.views) * 100).toFixed(1),
+    viewToApplication: (resume.views > 0
+      ? (resume.applications / resume.views) * 100
+      : 0
+    ).toFixed(1),
     atsScore: resume.atsScore,
   }));
 

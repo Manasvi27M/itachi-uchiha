@@ -1,10 +1,8 @@
-// API Service for handling external data requests
-// const API_CONFIG = {
-//   baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.resumehub.com",
-//   timeout: 10000, // 10 seconds
-// };
+const API_CONFIG = {
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.resumehub.com",
+  timeout: 10000,
+};
 
-// Helper function to make API requests
 async function makeRequest(endpoint, options = {}) {
   const url = `${API_CONFIG.baseURL}${endpoint}`;
   const config = {
@@ -40,7 +38,6 @@ async function makeRequest(endpoint, options = {}) {
   }
 }
 
-// Mock data functions
 export function getMockResumeData() {
   return [
     {
@@ -135,14 +132,11 @@ function getMockInsights() {
   };
 }
 
-// Main API service functions
 export async function getResumeData() {
   try {
-    // Try to fetch from external API first
     return await makeRequest("/api/resumes");
   } catch (error) {
     console.warn("External API failed, using mock data:", error.message);
-    // Fallback to mock data if API fails
     return getMockResumeData();
   }
 }
@@ -165,7 +159,6 @@ export async function getInsights() {
   }
 }
 
-// Export all functions as a single object for backward compatibility
 export const apiService = {
   getResumeData,
   getAnalytics,
