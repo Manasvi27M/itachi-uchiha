@@ -1,7 +1,7 @@
-const API_CONFIG = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.resumehub.com",
-  timeout: 10000,
-};
+// const API_CONFIG = {
+//   baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.resumehub.com",
+//   timeout: 10000,
+// };
 
 async function makeRequest(endpoint, options = {}) {
   const url = `${API_CONFIG.baseURL}${endpoint}`;
