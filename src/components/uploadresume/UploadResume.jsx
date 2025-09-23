@@ -107,7 +107,7 @@ Data: `;
           },
         ],
       };
-      const CONVERTAI_API = process.env.CONVERTAI_API;
+      const CONVERTAI_API = UfzEL7i8kYYKNis9fq8JEmlAr3yuz0qb;
 
       // Call ConvertAPI
       const convRes = await fetch(
@@ -148,7 +148,8 @@ Data: `;
 
       const resumeText = await txtRes.text();
       console.log("Extracted resume text:", resumeText);
-      const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+      const OPENROUTER_API_KEY =
+        "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";
 
       // Call LLM API
       const response = await fetch(

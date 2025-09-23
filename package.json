@@ -19,6 +19,7 @@
     "@tsparticles/react": "^3.0.0",
     "clsx": "^2.1.1",
     "convertapi-js": "^1.0.8",
+    "dotenv": "^17.1.0",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.484.0",
     "mammoth": "^1.9.1",
